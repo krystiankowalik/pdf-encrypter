@@ -1,0 +1,41 @@
+.button{
+    -fx-font-family: serif;
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+    -fx-font-weight: bolder;
+    -fx-pref-width: 70;
+}
+.button:hover{
+    -fx-opacity: 0.65;
+    -fx-background-color: orange;
+}
+
+#clear_button{
+    -fx-background-color: darkgrey;
+
+}
+
+.button:focused{
+    -fx-opacity: 1;
+}
+
+#encrypt_button{
+    -fx-background-color: cornflowerblue;
+}
+#encrypt_button:hover {
+    -fx-background-color: orange;
+}
+#clear_button:hover{
+    -fx-background-color: orange;
+}
+#decrypt_button  {
+    -fx-background-color: cadetblue ;
+}
+#decrypt_button:hover {
+    -fx-background-color: orange;
+}
+
+#file_list{
+   /* -fx-background-color: black;*/
+    -fx-text-fill: white;
+}
