@@ -43,9 +43,18 @@ public class PdfJob {
 
     public enum Status {
 
-        NOT_STARTED("Not started"), INVALID_PASSWORD("Invalid password"), NO_SUCH_FILE("There is no such file"), SUCCESS("Finished successfully");
+        NOT_STARTED("Not started"),
+        INVALID_PASSWORD("Invalid password"),
+        NO_SUCH_FILE("There is no such file"),
+        READ_ERROR("Unable to read from file"),
+        WRITE_ERROR("Unable to write to file"),
+        ACCESS_DENIED("No access to the file"),
+        NO_DOCUMENT("The document doesn't exist"),
+        UNEXPECTED_ERROR("Unexpected error occurred"),
+        SUCCESS_DECRYPT("Decrypted successfully"),
+        SUCCESS_ENCRYPT("Encrypted successfully");
 
-        StringProperty description;
+        private StringProperty description;
 
         Status(String description) {
             this.description = new SimpleStringProperty(description);

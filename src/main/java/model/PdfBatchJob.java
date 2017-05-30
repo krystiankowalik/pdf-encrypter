@@ -26,6 +26,10 @@ public class PdfBatchJob {
         return pdfBatchJob.get(index);
     }
 
+    public void set(int index, PdfJob pdfJob){
+        pdfBatchJob.set(index,pdfJob);
+    }
+
     public void add(PdfJob pdfJob) {
         pdfBatchJob.add(pdfJob);
     }

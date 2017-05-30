@@ -45,12 +45,12 @@ public class Controller implements Initializable {
 
         pdfBatchJob = new PdfBatchJob(FXCollections.observableArrayList());
 
+        handleEncryptionButtons();
         bindColumnsToProperties();
 
         handleDragDroppedEvent();
         handleClearButton();
         handleDeleteKey();
-        handleEncryptionButtons();
     }
 
     private void bindColumnsToProperties() {
@@ -68,7 +68,7 @@ public class Controller implements Initializable {
         pdfEncryptionUtilities = new PdfEncryptionUtilities();
 
         encryptButton.setOnMouseClicked(event -> {
-            pdfEncryptionUtilities.encrypt(pdfBatchJob);
+            pdfBatchJob = pdfEncryptionUtilities.encrypt(pdfBatchJob);
         });
 
         decryptButton.setOnMouseClicked(event -> {

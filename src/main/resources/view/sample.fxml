@@ -11,61 +11,72 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </top>
-   <bottom>
-      <HBox alignment="CENTER" BorderPane.alignment="CENTER">
-         <children>
-            <Label alignment="CENTER_RIGHT" contentDisplay="TEXT_ONLY" text="Source Pass:" textAlignment="CENTER" />
-            <TextField fx:id="sourcePasswordField" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="93.0" HBox.hgrow="NEVER">
-               <HBox.margin>
-                  <Insets left="7.0" />
-               </HBox.margin></TextField>
-            <Label alignment="CENTER_RIGHT" contentDisplay="TEXT_ONLY" text="Target Pass:" textAlignment="CENTER">
-               <HBox.margin>
-                  <Insets left="12.0" />
-               </HBox.margin></Label>
-            <TextField fx:id="targetPasswordField" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="93.0">
-               <HBox.margin>
-                  <Insets left="7.0" />
-               </HBox.margin></TextField>
-            <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-               <children>
-                  <Button id="clear_button" fx:id="clearButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="Clear">
-                     <HBox.margin>
-                        <Insets right="5.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Button id="encrypt_button" fx:id="encryptButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="Encrypt" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets right="5.0" />
-                     </HBox.margin></Button>
-                  <Button id="decrypt_button" fx:id="decryptButton" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="Decrypt" HBox.hgrow="ALWAYS" />
-               </children>
-            </HBox>
-         </children>
-      </HBox>
-   </bottom>
-   <center>
-   </center>
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.111"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <bottom>
+        <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+            <children>
+                <Label alignment="CENTER_RIGHT" contentDisplay="TEXT_ONLY" text="Source Pass:" textAlignment="CENTER"/>
+                <TextField fx:id="sourcePasswordField" maxWidth="1.7976931348623157E308" prefHeight="26.0"
+                           prefWidth="93.0" HBox.hgrow="NEVER">
+                    <HBox.margin>
+                        <Insets left="7.0"/>
+                    </HBox.margin>
+                </TextField>
+                <Label alignment="CENTER_RIGHT" contentDisplay="TEXT_ONLY" text="Target Pass:" textAlignment="CENTER">
+                    <HBox.margin>
+                        <Insets left="12.0"/>
+                    </HBox.margin>
+                </Label>
+                <TextField fx:id="targetPasswordField" maxWidth="1.7976931348623157E308" prefHeight="26.0"
+                           prefWidth="93.0">
+                    <HBox.margin>
+                        <Insets left="7.0"/>
+                    </HBox.margin>
+                </TextField>
+                <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Button id="clear_button" fx:id="clearButton" maxHeight="1.7976931348623157E308"
+                                mnemonicParsing="false" text="Clear">
+                            <HBox.margin>
+                                <Insets right="5.0"/>
+                            </HBox.margin>
+                        </Button>
+                        <Button id="encrypt_button" fx:id="encryptButton" maxHeight="1.7976931348623157E308"
+                                mnemonicParsing="false" text="Encrypt" HBox.hgrow="ALWAYS">
+                            <HBox.margin>
+                                <Insets right="5.0"/>
+                            </HBox.margin>
+                        </Button>
+                        <Button id="decrypt_button" fx:id="decryptButton" maxHeight="1.7976931348623157E308"
+                                mnemonicParsing="false" text="Decrypt" HBox.hgrow="ALWAYS"/>
+                    </children>
+                </HBox>
+            </children>
+        </HBox>
+    </bottom>
+    <center>
+    </center>
 </BorderPane>
