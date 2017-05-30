@@ -3,8 +3,6 @@ package model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.List;
-
 public class PdfBatchJob {
 
     private ObservableList<PdfJob> pdfBatchJob;
@@ -49,7 +47,6 @@ public class PdfBatchJob {
                 .anyMatch(pdfJob -> pdfJob
                         .getSourcePdfFile()
                         .getPathname()
-                        .getValue()
                         .equals(file));
     }
 

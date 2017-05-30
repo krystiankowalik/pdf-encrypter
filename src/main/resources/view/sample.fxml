@@ -37,7 +37,7 @@
       <HBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
             <Label alignment="CENTER_RIGHT" contentDisplay="TEXT_ONLY" text="Source Pass:" textAlignment="CENTER" />
-            <TextField fx:id="sourcePassword" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="93.0" HBox.hgrow="NEVER">
+            <TextField fx:id="sourcePasswordField" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="93.0" HBox.hgrow="NEVER">
                <HBox.margin>
                   <Insets left="7.0" />
                </HBox.margin></TextField>
@@ -45,7 +45,7 @@
                <HBox.margin>
                   <Insets left="12.0" />
                </HBox.margin></Label>
-            <TextField fx:id="targetPassword" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="93.0">
+            <TextField fx:id="targetPasswordField" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="93.0">
                <HBox.margin>
                   <Insets left="7.0" />
                </HBox.margin></TextField>

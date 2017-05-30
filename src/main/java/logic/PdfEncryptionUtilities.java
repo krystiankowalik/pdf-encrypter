@@ -1,7 +1,6 @@
 package logic;
 
 import model.PdfBatchJob;
-import model.PdfFile;
 import model.PdfJob;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -17,10 +16,14 @@ public class PdfEncryptionUtilities {
 
     private void encrypt(PdfJob pdfJob) {
 
+        System.out.println("Trying to encrypt using source password: "+ pdfJob.getSourcePdfFile().getPassword());
+        System.out.println("Trying to encrypt using target password: "+ pdfJob.getTargetPdfFile().getPassword());
+
+
         PDDocument doc = null;
         try {
             //doc = PDDocument.load(new File(pdfJob.getSourcePdfFile().getPathname()), pdfJob.getSourcePdfFile().getPassword());
-            doc = PDDocument.load(new File(pdfJob.getSourcePdfFile().getPathname().getValue()), pdfJob.getSourcePdfFile().getPassword().getValue());
+            doc = PDDocument.load(new File(pdfJob.getSourcePdfFile().getPathname()), pdfJob.getSourcePdfFile().getPassword());
         } catch (InvalidPasswordException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -31,7 +34,8 @@ public class PdfEncryptionUtilities {
 
         AccessPermission ap = new AccessPermission();
 
-        StandardProtectionPolicy spp = new StandardProtectionPolicy("", pdfJob.getTargetPdfFile().getPassword().getValue(), ap);
+        StandardProtectionPolicy spp = new StandardProtectionPolicy("", pdfJob.getTargetPdfFile().getPassword(), ap);
+
 
         spp.setEncryptionKeyLength(keyLength);
         spp.setPermissions(ap);
@@ -39,7 +43,7 @@ public class PdfEncryptionUtilities {
         if (doc != null) {
             try {
                 doc.protect(spp);
-                doc.save(pdfJob.getTargetPdfFile().getPathname().getValue());
+                doc.save(pdfJob.getTargetPdfFile().getPathname());
                 doc.close();
                 pdfJob.setStatus(PdfJob.Status.SUCCESS);
             } catch (IOException e) {
@@ -52,11 +56,13 @@ public class PdfEncryptionUtilities {
 
     private void decrypt(PdfJob pdfJob) {
 
+        System.out.println("Trying to decrypt using source password: "+ pdfJob.getSourcePdfFile().getPassword());
+
         PDDocument doc;
         try {
-            doc = PDDocument.load(new File(pdfJob.getSourcePdfFile().getPathname().getValue()), pdfJob.getSourcePdfFile().getPassword().getValue());
+            doc = PDDocument.load(new File(pdfJob.getSourcePdfFile().getPathname()), pdfJob.getSourcePdfFile().getPassword());
             doc.setAllSecurityToBeRemoved(true);
-            doc.save(pdfJob.getTargetPdfFile().getPathname().getValue());
+            doc.save(pdfJob.getTargetPdfFile().getPathname());
             doc.close();
             pdfJob.setStatus(PdfJob.Status.SUCCESS);
         }catch(InvalidPasswordException e){

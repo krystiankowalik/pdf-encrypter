@@ -3,24 +3,30 @@ package model;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.io.File;
-
 public class PdfFile {
     private StringProperty password;
-    private StringProperty pathName;
+    private StringProperty pathname;
 
-    public PdfFile(String pathName, String password) {
-        //super(pathName);
-        this.pathName = new SimpleStringProperty(pathName);
-        this.password = new SimpleStringProperty(password);
+    public PdfFile(String pathname, StringProperty password) {
+        //super(pathname);
+        this.pathname = new SimpleStringProperty(pathname);
+        this.password = (password);
 
     }
 
-    public StringProperty getPathname(){
-        return this.pathName;
+    public String getPassword() {
+        return password.get();
     }
 
-    public StringProperty getPassword() {
-        return this.password;
+    public StringProperty passwordProperty() {
+        return password;
+    }
+
+    public String getPathname() {
+        return pathname.get();
+    }
+
+    public StringProperty pathnameProperty() {
+        return pathname;
     }
 }
