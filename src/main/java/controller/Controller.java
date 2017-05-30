@@ -1,23 +1,24 @@
 package controller;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
-import logic.PdfUtilities;
+import logic.PdfEncryptionUtilities;
+import model.PdfBatchJob;
 import model.PdfFile;
-import model.PdfFiles;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import model.PdfJob;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+
+    private PdfEncryptionUtilities pdfEncryptionUtilities;
 
     @FXML
     private Button encryptButton;
@@ -30,106 +31,133 @@ public class Controller implements Initializable {
     @FXML
     private Button clearButton;
     @FXML
-    private ListView<Label> fileList;
+    private ListView<Label> fileListView;
 
     public Button getClearButton() {
         return clearButton;
     }
 
-    public ListView<Label> getFileList() {
-        return fileList;
+    public ListView<Label> getFileListView() {
+        return fileListView;
     }
+
+    private PdfBatchJob pdfBatchJob;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        fileList.setOnDragOver(event -> {
-            if (event.getGestureSource() != fileList
+        fileListView.setOnDragOver(event -> {
+            if (event.getGestureSource() != fileListView
                     && event.getDragboard().hasFiles()) {
-                /*List<File> paths = event.getDragboard().getFiles();*/
-                /*if (paths.stream().allMatch(f->f.getName().trim().endsWith(".pdf"))) {*/
-                /* allow for both copying and moving, whatever user chooses */
-                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                /*}*/
+
+                List<File> paths = event.getDragboard().getFiles();
+
+                if (paths.stream().allMatch(f -> f.getName().trim().endsWith(".pdf"))) {
+                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                }
             }
             event.consume();
         });
 
-        fileList.setOnDragDropped(event -> {
+        fileListView.setOnDragDropped(event -> {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
-            if (dragboard.hasString()) {
-                dragboard.getFiles().stream()
-                        .map(file->file.getAbsolutePath())
-                        .filter(path -> path.endsWith(".pdf") && !fileListContains(path))
-                        .forEach(e -> fileList.getItems().add(new Label(e)));
+            if (dragboard.hasFiles()) {
+                PdfBatchJob pdfBatchJob = getBatchJobFromDragboard(dragboard);
+                updateList(pdfBatchJob);
                 success = true;
             }
-            /* let the source know whether the string was successfully
-             * transferred and used */
+
             event.setDropCompleted(success);
 
             event.consume();
         });
 
-        fileList.setOnDragEntered(event -> {
-            fileList.setStyle("-fx-background-color: lightgray");
+
+        fileListView.setOnDragEntered(event -> {
+            fileListView.setStyle("-fx-background-color: lightgray");
         });
-        fileList.setOnDragExited(event -> {
-            fileList.setStyle("-fx-background-color: white");
+        fileListView.setOnDragExited(event -> {
+            fileListView.setStyle("-fx-background-color: white");
         });
+
 
         /*Clearing the entire list*/
-        clearButton.setOnMouseClicked(event -> fileList.getItems().clear());
+        clearButton.setOnMouseClicked(event -> fileListView.getItems().clear());
 
         /*Handling multiple selection - activation*/
-        fileList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         /*Handling deleting individual items from the list*/
-        fileList.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+        fileListView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.DELETE) {
-                fileList.getItems().removeAll(fileList.getSelectionModel().getSelectedItems());
+                fileListView.getItems().removeAll(fileListView.getSelectionModel().getSelectedItems());
 
                 /*the below is to for the current selection to remain
                 * the same after deleting an item - interface issue*/
-                int currentlySelectedIndex = fileList.getSelectionModel().getSelectedIndex();
+                int currentlySelectedIndex = fileListView.getSelectionModel().getSelectedIndex();
                 if (currentlySelectedIndex > 0
-                        && currentlySelectedIndex + 1 < fileList.getItems().size()) {
-                    fileList.getSelectionModel().clearSelection();
-                    fileList.getSelectionModel().select(currentlySelectedIndex + 1);
+                        && currentlySelectedIndex + 1 < fileListView.getItems().size()) {
+                    fileListView.getSelectionModel().clearSelection();
+                    fileListView.getSelectionModel().select(currentlySelectedIndex + 1);
                 }
             }
         });
 
+        pdfEncryptionUtilities = new PdfEncryptionUtilities();
+
         encryptButton.setOnMouseClicked(event -> {
-            preparePdfUtilities().batchEncrypt();
+            pdfEncryptionUtilities.encrypt(getBatchJob());
         });
 
         decryptButton.setOnMouseClicked(event -> {
-            preparePdfUtilities().batchDecrypt();
+            pdfEncryptionUtilities.decrypt(getBatchJob());
+
         });
 
     }
 
-    private PdfUtilities preparePdfUtilities() {
-        PdfFiles pdfSourceFiles = new PdfFiles();
-        PdfFiles pdfTargetFiles = new PdfFiles();
+    private void updateList(PdfBatchJob pdfBatchJob) {
+        fileListView.getItems().clear();
+        for(int i=0; i<pdfBatchJob.size();++i){
+            fileListView.getItems().add(new Label(pdfBatchJob.get(i).getSourcePdfFile().getAbsolutePath()));
+        }
 
+    }
 
-        fileList.getItems()
+    private PdfBatchJob getBatchJobFromDragboard(Dragboard dragboard) {
+        PdfBatchJob tmpPdfBatchJob = new PdfBatchJob();
+        dragboard
+                .getFiles()
+                .stream()
+                .map(File::getAbsolutePath)
+                .peek(System.out::println)
+                .filter(path -> path.endsWith(".pdf") && !fileListContains(path))
+                .forEach(path -> tmpPdfBatchJob
+                        .add(new PdfJob(
+                                new PdfFile(path, sourcePassword.toString()),
+                                new PdfFile(path, targetPassword.toString()))));
+        return tmpPdfBatchJob;
+    }
+
+    private PdfBatchJob getBatchJob() {
+        PdfBatchJob pdfBatchJob = new PdfBatchJob(FXCollections.observableArrayList());
+
+        fileListView.getItems()
                 .stream()
                 .map(Labeled::getText)
-                .forEach(path -> pdfSourceFiles.add(new PdfFile(path, sourcePassword.getText())));
-        fileList.getItems()
-                .stream()
-                .map(Labeled::getText)
-                .forEach(path -> pdfTargetFiles.add(new PdfFile(path, targetPassword.getText())));
+                .forEach(path -> {
+                    pdfBatchJob.add(new PdfJob(
+                            new PdfFile(path, sourcePassword.getText()),
+                            new PdfFile(path, targetPassword.getText())));
 
-        return new PdfUtilities(pdfSourceFiles, pdfTargetFiles);
+                });
+
+        return pdfBatchJob;
     }
 
     private boolean fileListContains(String path) {
-        return fileList
+        return fileListView
                 .getItems()
                 .stream()
                 .anyMatch(e -> e.getText().equals(path));

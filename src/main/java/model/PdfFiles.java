@@ -1,6 +1,8 @@
 package model;
 
-import java.util.ArrayList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.List;
 
 /**
@@ -8,13 +10,13 @@ import java.util.List;
  */
 public class PdfFiles  {
 
-    private List<PdfFile> pdfFiles = new ArrayList<>();
+    private ObservableList<PdfFile> pdfFiles = FXCollections.observableArrayList();
 
     public List<PdfFile> getPdfFiles() {
         return pdfFiles;
     }
 
-    public void setPdfFiles(List<PdfFile> pdfFiles) {
+    public void setPdfFiles(ObservableList<PdfFile> pdfFiles) {
         this.pdfFiles = pdfFiles;
     }
 

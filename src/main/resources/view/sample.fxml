@@ -67,6 +67,6 @@
       </HBox>
    </bottom>
    <center>
-      <ListView id="file_list" fx:id="fileList" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView id="file_list" fx:id="fileListView" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
