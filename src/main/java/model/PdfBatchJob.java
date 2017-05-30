@@ -43,7 +43,17 @@ public class PdfBatchJob {
 
     }*/
 
-    public List<PdfJob> getPdfBatchJob() {
+    public boolean containsSourceFile(String file) {
+        return pdfBatchJob
+                .stream()
+                .anyMatch(pdfJob -> pdfJob
+                        .getSourcePdfFile()
+                        .getPathname()
+                        .getValue()
+                        .equals(file));
+    }
+
+    public ObservableList<PdfJob> getPdfBatchJob() {
         return pdfBatchJob;
     }
 

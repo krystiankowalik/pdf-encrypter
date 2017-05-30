@@ -12,7 +12,7 @@ public class PdfFiles  {
 
     private ObservableList<PdfFile> pdfFiles = FXCollections.observableArrayList();
 
-    public List<PdfFile> getPdfFiles() {
+    public ObservableList<PdfFile> getPdfFiles() {
         return pdfFiles;
     }
 

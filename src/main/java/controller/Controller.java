@@ -1,10 +1,13 @@
 package controller;
 
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
+import javafx.scene.layout.BorderPane;
+import javafx.util.Callback;
 import logic.PdfEncryptionUtilities;
 import model.PdfBatchJob;
 import model.PdfFile;
@@ -12,8 +15,6 @@ import model.PdfJob;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -31,22 +32,89 @@ public class Controller implements Initializable {
     @FXML
     private Button clearButton;
     @FXML
-    private ListView<Label> fileListView;
-
-    public Button getClearButton() {
-        return clearButton;
-    }
-
-    public ListView<Label> getFileListView() {
-        return fileListView;
-    }
+    private BorderPane mainPane;
+    private TableView<PdfJob> pdfJobTableView;
 
     private PdfBatchJob pdfBatchJob;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        pdfJobTableView = new TableView<>();
+        mainPane.setCenter(pdfJobTableView);
 
-        fileListView.setOnDragOver(event -> {
+        pdfBatchJob = new PdfBatchJob(FXCollections.observableArrayList());
+
+        TableColumn<PdfJob, String> pdfSourcePathColumn = new TableColumn<>("Path");
+        TableColumn<PdfJob, String> pdfJobStatusColumn = new TableColumn<>("Status");
+
+        pdfSourcePathColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PdfJob, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<PdfJob, String> param) {
+                return param.getValue().getSourcePdfFile().getPathname();
+            }
+        });
+        pdfJobStatusColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PdfJob, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<PdfJob, String> param) {
+                return param.getValue().getStatus().descriptionProperty();
+            }
+        });
+        pdfJobTableView.setItems(pdfBatchJob.getPdfBatchJob());
+        pdfJobTableView.getColumns().setAll(pdfSourcePathColumn, pdfJobStatusColumn);
+        //pdfBatchJob.getPdfBatchJob().stream().peek(System.out::println).forEach(sth-> pathColumn.setCellValueFactory(new PropertyValueFactory<>(sth.getSourcePdfFile().getPathname().getValue())));
+
+
+        /*pathColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PdfJob, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<PdfJob, String> param) {
+                return param.getValue().getSourcePdfFile().getPathname();
+            }
+        });
+
+        pdfJobTableView.setItems(pdfBatchJob.getPdfBatchJob());
+        pdfJobTableView.getColumns().setAll(pathColumn);*/
+
+
+        pdfJobTableView.setOnDragOver(event -> {
+            if (event.getGestureSource() != pdfJobTableView
+                    && event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            event.consume();
+        });
+
+        pdfJobTableView.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            boolean success = false;
+            if (dragboard.hasFiles()) {
+                updatePdfBatchJobFromDragboard(dragboard);
+
+                success = true;
+            }
+
+            event.setDropCompleted(success);
+
+            event.consume();
+        });
+
+    }
+
+    private void updatePdfBatchJobFromDragboard(Dragboard dragboard) {
+        dragboard
+                .getFiles()
+                .stream()
+                .map(File::getAbsolutePath)
+                .peek(System.out::println)
+                .filter(path -> path.endsWith(".pdf") && !pdfBatchJob.containsSourceFile(path))
+                .forEach(path -> pdfBatchJob
+                        .add(new PdfJob(
+                                new PdfFile(path, sourcePassword.toString()),
+                                new PdfFile(path, targetPassword.toString()))));
+    }
+
+
+
+  /*      fileListView.setOnDragOver(event -> {
             if (event.getGestureSource() != fileListView
                     && event.getDragboard().hasFiles()) {
 
@@ -63,7 +131,7 @@ public class Controller implements Initializable {
             Dragboard dragboard = event.getDragboard();
             boolean success = false;
             if (dragboard.hasFiles()) {
-                PdfBatchJob pdfBatchJob = getBatchJobFromDragboard(dragboard);
+                PdfBatchJob pdfBatchJob = updatePdfBatchJobFromDragboard(dragboard);
                 updateList(pdfBatchJob);
                 success = true;
             }
@@ -82,19 +150,19 @@ public class Controller implements Initializable {
         });
 
 
-        /*Clearing the entire list*/
+        *//*Clearing the entire list*//*
         clearButton.setOnMouseClicked(event -> fileListView.getItems().clear());
 
-        /*Handling multiple selection - activation*/
+        *//*Handling multiple selection - activation*//*
         fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        /*Handling deleting individual items from the list*/
+        *//*Handling deleting individual items from the list*//*
         fileListView.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.DELETE) {
                 fileListView.getItems().removeAll(fileListView.getSelectionModel().getSelectedItems());
 
-                /*the below is to for the current selection to remain
-                * the same after deleting an item - interface issue*/
+                *//*the below is to for the current selection to remain
+                * the same after deleting an item - interface issue*//*
                 int currentlySelectedIndex = fileListView.getSelectionModel().getSelectedIndex();
                 if (currentlySelectedIndex > 0
                         && currentlySelectedIndex + 1 < fileListView.getItems().size()) {
@@ -119,20 +187,20 @@ public class Controller implements Initializable {
 
     private void updateList(PdfBatchJob pdfBatchJob) {
         fileListView.getItems().clear();
-        for(int i=0; i<pdfBatchJob.size();++i){
+        for (int i = 0; i < pdfBatchJob.size(); ++i) {
             fileListView.getItems().add(new Label(pdfBatchJob.get(i).getSourcePdfFile().getAbsolutePath()));
         }
 
     }
 
-    private PdfBatchJob getBatchJobFromDragboard(Dragboard dragboard) {
+    private PdfBatchJob updatePdfBatchJobFromDragboard(Dragboard dragboard) {
         PdfBatchJob tmpPdfBatchJob = new PdfBatchJob();
         dragboard
                 .getFiles()
                 .stream()
                 .map(File::getAbsolutePath)
                 .peek(System.out::println)
-                .filter(path -> path.endsWith(".pdf") && !fileListContains(path))
+                .filter(path -> path.endsWith(".pdf") && !pdfBatchJobContains(path))
                 .forEach(path -> tmpPdfBatchJob
                         .add(new PdfJob(
                                 new PdfFile(path, sourcePassword.toString()),
@@ -156,12 +224,12 @@ public class Controller implements Initializable {
         return pdfBatchJob;
     }
 
-    private boolean fileListContains(String path) {
+    private boolean pdfBatchJobContains(String path) {
         return fileListView
                 .getItems()
                 .stream()
                 .anyMatch(e -> e.getText().equals(path));
     }
 
-
+*/
 }
