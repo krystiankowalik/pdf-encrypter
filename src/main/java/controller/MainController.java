@@ -1,25 +1,45 @@
 package controller;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.BorderPane;
-import logic.PdfEncryptionUtilities;
 import model.PdfBatchJob;
-import model.PdfFile;
 import model.PdfJob;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable {
+public class MainController implements Initializable {
+
+    @FXML
+    private FilePaneController filePaneController;
+    @FXML
+    private MenuPaneController menuPaneController;
+
+
+    private PdfBatchJob pdfBatchJob;
+
+    public PdfBatchJob getPdfBatchJob() {
+        return pdfBatchJob;
+    }
+
+    public void setPdfBatchJob(PdfBatchJob pdfBatchJob) {
+        this.pdfBatchJob = pdfBatchJob;
+    }
+
+    public void addPdfJob(PdfJob pdfJob) {
+        pdfBatchJob.add(pdfJob);
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+    }
+/*
+
 
     private PdfEncryptionUtilities pdfEncryptionUtilities;
+
+    private TableColumn<PdfJob, String> pdfSourcePathColumn;
+    private TableColumn<PdfJob, String> pdfJobStatusColumn;
 
     @FXML
     private Button encryptButton;
@@ -33,6 +53,8 @@ public class Controller implements Initializable {
     private Button clearButton;
     @FXML
     private BorderPane mainPane;
+
+    @FXML
     private TableView<PdfJob> pdfJobTableView;
 
     private PdfBatchJob pdfBatchJob;
@@ -40,28 +62,30 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        pdfJobTableView = new TableView<>();
-        mainPane.setCenter(pdfJobTableView);
-
         pdfBatchJob = new PdfBatchJob(FXCollections.observableArrayList());
 
-        handleEncryptionButtons();
         bindColumnsToProperties();
 
         handleDragDroppedEvent();
         handleClearButton();
         handleDeleteKey();
+        handleEncryptionButtons();
     }
 
+
+    @SuppressWarnings("unchecked")
     private void bindColumnsToProperties() {
-        TableColumn<PdfJob, String> pdfSourcePathColumn = new TableColumn<>("Path");
-        TableColumn<PdfJob, String> pdfJobStatusColumn = new TableColumn<>("Status");
+        pdfSourcePathColumn = new TableColumn<>("Path");
+        pdfJobStatusColumn = new TableColumn<>("Status");
+
+        pdfJobStatusColumn.maxWidthProperty().bind(pdfJobTableView.widthProperty().multiply(2.1));
 
         pdfSourcePathColumn.setCellValueFactory(param -> param.getValue().getSourcePdfFile().pathnameProperty());
         pdfJobStatusColumn.setCellValueFactory(param -> param.getValue().getStatus().descriptionProperty());
 
         pdfJobTableView.setItems(pdfBatchJob.getPdfBatchJob());
         pdfJobTableView.getColumns().setAll(pdfSourcePathColumn, pdfJobStatusColumn);
+
     }
 
     private void handleEncryptionButtons() {
@@ -117,13 +141,23 @@ public class Controller implements Initializable {
             event.setDropCompleted(success);
             event.consume();
         });
+
+        pdfJobTableView.setOnDragEntered(event -> {
+            pdfJobTableView.setStyle("-fx-background-color: lightgray");
+            pdfJobTableView.setPlaceholder(new Label("Drop them!"));
+        });
+        pdfJobTableView.setOnDragExited(event -> {
+            pdfJobTableView.setStyle("-fx-background-color: white");
+            pdfJobTableView.setPlaceholder(new Label("Drag your files here!"));
+
+        });
     }
 
     private void updatePdfBatchJobFromDragboard(Dragboard dragboard) {
-        StringProperty sourcePassword = new SimpleStringProperty();
-        StringProperty targetPassword = new SimpleStringProperty();
-        sourcePassword.bind(sourcePasswordField.textProperty());
-        targetPassword.bind(targetPasswordField.textProperty());
+        StringProperty sourcePasswordProperty = new SimpleStringProperty();
+        StringProperty targetPasswordProperty = new SimpleStringProperty();
+        sourcePasswordProperty.bind(sourcePasswordField.textProperty());
+        targetPasswordProperty.bind(targetPasswordField.textProperty());
 
         dragboard
                 .getFiles()
@@ -132,7 +166,10 @@ public class Controller implements Initializable {
                 .filter(path -> path.endsWith(".pdf") && !pdfBatchJob.containsSourceFile(path))
                 .forEach(path -> pdfBatchJob
                         .add(new PdfJob(
-                                new PdfFile(path, sourcePassword),
-                                new PdfFile(path, targetPassword))));
+                                new PdfFile(path, sourcePasswordProperty),
+                                new PdfFile(path, targetPasswordProperty))));
     }
+
+*/
+
 }

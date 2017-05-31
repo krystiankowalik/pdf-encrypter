@@ -39,3 +39,11 @@
    /* -fx-background-color: black;*/
     -fx-text-fill: white;
 }
+
+#application_status_indicator{
+    -fx-background-color: seashell;
+}
+
+#application_status_indicator_text{
+    -fx-font-size: 10;
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="fileViewPane" prefHeight="200.0" prefWidth="100.0" stylesheets="@style.css" BorderPane.alignment="CENTER"
+      xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.FilePaneController">
+
+    <children>
+        <TableView id="pdf_job_table_view" fx:id="pdfJobTableView" maxHeight="1.7976931348623157E308"
+                   maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <placeholder>
+                <Label text="Drag your files here!"/>
+            </placeholder>
+            <columns>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+    </children>
+</VBox>
