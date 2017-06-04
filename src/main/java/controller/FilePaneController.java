@@ -140,8 +140,6 @@ public class FilePaneController implements Initializable {
     public void handleSourcePasswordPropertyChangeEvent(final SourcePasswordPropertyEvent sourcePasswordPropertyEvent) {
         logger.debug("Source pass property: " + sourcePasswordPropertyEvent.getProperty().getValue());
         sourcePasswordProperty.bind(sourcePasswordPropertyEvent.getProperty());
-
-        //pdfBatchJob.getPdfBatchJob().forEach(x -> System.out.println(x.getSourcePdfFile().passwordProperty().getValue()));
     }
 
     @Subscribe

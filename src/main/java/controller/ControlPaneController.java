@@ -52,29 +52,7 @@ public class ControlPaneController implements Initializable {
                     new SourcePasswordPropertyEvent(new SimpleStringProperty(newValue));
             EventBusProvider.getInstance().post(sourcePasswordPropertyEvent);
         });
-        /*targetPasswordField.setOnKeyTyped(event -> {
-            logger.debug("Key typed! " + event.getText());
-            String currentText = targetPasswordField.textProperty().getValueSafe();
-            if (!event.getText().equals("\b")){
-                currentText = currentText + event.getCharacter();
-            }
-            StringProperty newStringProperty =
-                    new SimpleStringProperty(currentText);
-            TargetPasswordPropertyEvent targetPasswordPropertyEvent =
-                    new TargetPasswordPropertyEvent(newStringProperty);
-            EventBusProvider.getInstance().post(targetPasswordPropertyEvent);
-        });
-*/
-        /*sourcePasswordField.setOnKeyTyped(event -> {
-            logger.debug("Text typed! " + event.getText());
-            logger.debug("Character typed! " + event.getCharacter());
 
-
-            SourcePasswordPropertyEvent sourcePasswordPropertyEvent =
-                    new SourcePasswordPropertyEvent(new SimpleStringProperty(
-                            sourcePasswordField.textProperty().getValueSafe() + event.getCharacter()));
-            EventBusProvider.getInstance().post(sourcePasswordPropertyEvent);
-        });*/
     }
 
     private void postButtonEvents() {
