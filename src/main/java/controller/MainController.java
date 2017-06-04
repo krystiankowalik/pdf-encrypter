@@ -36,7 +36,7 @@ public class MainController implements Initializable {
 /*
 
 
-    private PdfEncryptionUtilities pdfEncryptionUtilities;
+    private PdfEncryptionHandler pdfEncryptionUtilities;
 
     private TableColumn<PdfJob, String> pdfSourcePathColumn;
     private TableColumn<PdfJob, String> pdfJobStatusColumn;
@@ -89,7 +89,7 @@ public class MainController implements Initializable {
     }
 
     private void handleEncryptionButtons() {
-        pdfEncryptionUtilities = new PdfEncryptionUtilities();
+        pdfEncryptionUtilities = new PdfEncryptionHandler();
 
         encryptButton.setOnMouseClicked(event -> {
             pdfBatchJob = pdfEncryptionUtilities.encrypt(pdfBatchJob);

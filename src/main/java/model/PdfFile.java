@@ -13,9 +13,16 @@ public class PdfFile {
         this.password = (password);
 
     }
+    public PdfFile(String pathname) {
+        //super(pathname);
+        this.pathname = new SimpleStringProperty(pathname);
+        this.password = new SimpleStringProperty("");
+
+    }
+
 
     public String getPassword() {
-        return password.get();
+        return password.getValueSafe();
     }
 
     public StringProperty passwordProperty() {
@@ -23,10 +30,18 @@ public class PdfFile {
     }
 
     public String getPathname() {
-        return pathname.get();
+        return pathname.getValueSafe();
     }
 
     public StringProperty pathnameProperty() {
         return pathname;
+    }
+
+    @Override
+    public String toString() {
+        return "PdfFile{" +
+                "password=" + password.getValueSafe() +
+                ", pathname=" + pathname.getValueSafe() +
+                '}';
     }
 }

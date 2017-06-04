@@ -5,9 +5,6 @@ import javafx.collections.ObservableList;
 
 import java.util.List;
 
-/**
- * Created by wd40 on 21.05.17.
- */
 public class PdfFiles  {
 
     private ObservableList<PdfFile> pdfFiles = FXCollections.observableArrayList();

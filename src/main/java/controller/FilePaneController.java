@@ -1,20 +1,17 @@
 package controller;
 
 import com.google.common.eventbus.Subscribe;
-import event.EventBusProvider;
-import event.type.DecryptButtonClickedEvent;
-import event.type.EncryptButtonClickedEvent;
-import event.type.SourcePasswordPropertyEvent;
-import event.type.TargetPasswordPropertyEvent;
+import event.type.*;
+import javafx.scene.input.*;
+import javafx.stage.Stage;
+import org.apache.log4j.Logger;
+import util.EventBusProvider;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TransferMode;
+import util.PdfEncryptionHandler;
 import model.PdfBatchJob;
 import model.PdfFile;
 import model.PdfJob;
@@ -22,43 +19,41 @@ import model.PdfJob;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Stack;
 
 public class FilePaneController implements Initializable {
+
+    final private Logger logger = Logger.getLogger(getClass());
 
     private PdfBatchJob pdfBatchJob;
 
     @FXML
     private TableView<PdfJob> pdfJobTableView;
 
-    @FXML
-    private ControlPaneController controlPaneController;
+    private StringProperty sourcePasswordProperty;
+    private StringProperty targetPasswordProperty;
 
-    private TableColumn<PdfJob, String> pdfSourcePathColumn;
-    private TableColumn<PdfJob, String> pdfJobStatusColumn;
-
-    public PdfBatchJob getPdfBatchJob() {
-        return pdfBatchJob;
-    }
-
-    private StringProperty targetPasswordProperty = new SimpleStringProperty();
-    private StringProperty sourcePasswordProperty = new SimpleStringProperty();
+    private Stage primaryStage;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        registerEventBus();
         pdfBatchJob = new PdfBatchJob();
+        sourcePasswordProperty = new SimpleStringProperty();
+        targetPasswordProperty = new SimpleStringProperty();
 
+        registerEventBus();
         bindColumnsToProperties();
         handleDragDroppedEvent();
+        setDragEffects();
         handleDeleteKey();
     }
 
 
     @SuppressWarnings("unchecked")
     private void bindColumnsToProperties() {
-        pdfSourcePathColumn = new TableColumn<>("Path");
-        pdfJobStatusColumn = new TableColumn<>("Status");
+        TableColumn<PdfJob, String> pdfSourcePathColumn = new TableColumn<>("Path");
+        TableColumn<PdfJob, String> pdfJobStatusColumn = new TableColumn<>("Status");
 
         pdfSourcePathColumn.setCellValueFactory(param -> param.getValue().getSourcePdfFile().pathnameProperty());
         pdfJobStatusColumn.setCellValueFactory(param -> param.getValue().getStatus().descriptionProperty());
@@ -71,6 +66,7 @@ public class FilePaneController implements Initializable {
 
 
     private void handleDragDroppedEvent() {
+
         pdfJobTableView.setOnDragOver(event -> {
             if (event.getGestureSource() != pdfJobTableView
                     && event.getDragboard().hasFiles()) {
@@ -90,6 +86,9 @@ public class FilePaneController implements Initializable {
             event.consume();
         });
 
+    }
+
+    private void setDragEffects() {
         pdfJobTableView.setOnDragEntered(event -> {
             pdfJobTableView.setStyle("-fx-background-color: lightgray");
             pdfJobTableView.setPlaceholder(new Label("Drop them!"));
@@ -102,8 +101,6 @@ public class FilePaneController implements Initializable {
     }
 
     private void updatePdfBatchJobFromDragboard(Dragboard dragboard) {
-        //sourcePasswordProperty.bind(controlPaneController.getSourcePasswordField().textProperty());
-        //targetPasswordProperty.bind(controlPaneController.getTargetPasswordField().textProperty());
 
         dragboard
                 .getFiles()
@@ -132,38 +129,48 @@ public class FilePaneController implements Initializable {
         });
     }
 
+
     @Subscribe
     public void handleTargetPasswordPropertyChangeEvent(final TargetPasswordPropertyEvent targetPasswordPropertyEvent) {
-        System.out.println("Target pass property: " + targetPasswordPropertyEvent.getProperty().getValue());
+        logger.debug("Target pass property: " + targetPasswordPropertyEvent.getProperty().getValue());
         targetPasswordProperty.bind(targetPasswordPropertyEvent.getProperty());
     }
 
     @Subscribe
     public void handleSourcePasswordPropertyChangeEvent(final SourcePasswordPropertyEvent sourcePasswordPropertyEvent) {
-        System.out.println("Source pass property: " + sourcePasswordPropertyEvent.getProperty().getValue());
+        logger.debug("Source pass property: " + sourcePasswordPropertyEvent.getProperty().getValue());
         sourcePasswordProperty.bind(sourcePasswordPropertyEvent.getProperty());
 
-        pdfBatchJob.getPdfBatchJob().forEach(x-> System.out.println(x.getSourcePdfFile().passwordProperty().getValue()));
+        //pdfBatchJob.getPdfBatchJob().forEach(x -> System.out.println(x.getSourcePdfFile().passwordProperty().getValue()));
     }
 
     @Subscribe
     public void handleEncryptButtonClickedEvent(final EncryptButtonClickedEvent encryptButtonClickedEvent) {
-        System.out.println("Encrypt Button clicked in: " + getClass().getSimpleName() + " too");
-        // TODO: 31.05.17 To cover encryption logic
+        logger.debug("Encrypt Button signal received in: " + getClass().getSimpleName() + " too");
+        PdfEncryptionHandler.getInstance().encrypt(pdfBatchJob);
     }
 
     @Subscribe
     public void handleDecryptButtonClickedEvent(final DecryptButtonClickedEvent decryptButtonClickedEvent) {
-        System.out.println("Decrypt Button clicked in: " + getClass().getSimpleName() + " too");
-        // TODO: 31.05.17 To cover decryption logic
+        logger.debug("Decrypt Button signal received in: " + getClass().getSimpleName() + " too");
+        PdfEncryptionHandler.getInstance().decrypt(pdfBatchJob);
+    }
+
+    @Subscribe
+    public void handleApplicationStart(final ApplicationStartEvent applicationStartEvent) {
+        logger.debug(applicationStartEvent.getClass().getSimpleName() + " received");
+        primaryStage = applicationStartEvent.getStage();
+    }
+
+    @Subscribe
+    public void handleClearButtonClickedEvent(final ClearButtonClickedEvent clearButtonClickedEvent) {
+        logger.debug("Clear Button signal received in: " + getClass().getSimpleName() + " too");
     }
 
 
     private void registerEventBus() {
-        System.out.println("Registering EventBut in " + getClass().getSimpleName());
         EventBusProvider.getInstance().register(this);
     }
-
 
 
 }

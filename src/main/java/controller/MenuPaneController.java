@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 
 public class MenuPaneController implements Initializable {
 
-    private PdfBatchJob pdfBatchJob;
+   /* private PdfBatchJob pdfBatchJob;
 
     public PdfBatchJob getPdfBatchJob() {
         return pdfBatchJob;
@@ -22,7 +22,7 @@ public class MenuPaneController implements Initializable {
     public void addPdfJob(PdfJob pdfJob){
         pdfBatchJob.add(pdfJob);
     }
-
+*/
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -30,7 +30,7 @@ public class MenuPaneController implements Initializable {
 /*
 
 
-    private PdfEncryptionUtilities pdfEncryptionUtilities;
+    private PdfEncryptionHandler pdfEncryptionUtilities;
 
     private TableColumn<PdfJob, String> pdfSourcePathColumn;
     private TableColumn<PdfJob, String> pdfJobStatusColumn;
@@ -83,7 +83,7 @@ public class MenuPaneController implements Initializable {
     }
 
     private void handleEncryptionButtons() {
-        pdfEncryptionUtilities = new PdfEncryptionUtilities();
+        pdfEncryptionUtilities = new PdfEncryptionHandler();
 
         encryptButton.setOnMouseClicked(event -> {
             pdfBatchJob = pdfEncryptionUtilities.encrypt(pdfBatchJob);

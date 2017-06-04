@@ -2,17 +2,8 @@ package model;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 
-/**
- * Created by wd40 on 21.05.17.
- */
 public class PdfJob {
 
     private PdfFile sourcePdfFile;
@@ -24,6 +15,7 @@ public class PdfJob {
         this.targetPdfFile = targetPdfFile;
         status = Status.NOT_STARTED;
     }
+
 
     public PdfFile getSourcePdfFile() {
         return sourcePdfFile;
@@ -61,7 +53,7 @@ public class PdfJob {
         }
 
         public String getDescription() {
-            return description.get();
+            return description.getValueSafe();
         }
 
         public StringProperty descriptionProperty() {
@@ -69,4 +61,11 @@ public class PdfJob {
         }
     }
 
+    @Override
+    public String toString() {
+        return "PdfJob{" +
+                "sourcePdfFile=" + sourcePdfFile +
+                ", targetPdfFile=" + targetPdfFile +
+                '}';
+    }
 }
