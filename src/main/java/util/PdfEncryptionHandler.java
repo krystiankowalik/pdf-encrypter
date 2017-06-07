@@ -1,7 +1,7 @@
 package util;
 
-import model.PdfBatchJob;
-import model.PdfJob;
+import model.pdf.PdfBatchJob;
+import model.pdf.PdfJob;
 import org.apache.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -12,8 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-
-// TODO: 29.05.17 Job statuses to be added
+import java.util.concurrent.*;
 
 public class PdfEncryptionHandler {
 
@@ -140,6 +139,40 @@ public class PdfEncryptionHandler {
         for (int i = 0; i < pdfBatchJob.size(); ++i) {
             updatedPdfJob = decrypt(pdfBatchJob.get(i));
             pdfBatchJob.set(i, updatedPdfJob);
+        }
+    }
+
+    public void decryptAsync(PdfBatchJob pdfBatchJob) {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.submit(() -> {
+
+            decrypt(pdfBatchJob);
+        });
+        shutdownExecutor(executorService);
+    }
+
+    public void encryptAsync(PdfBatchJob pdfBatchJob) {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.submit(() -> {
+
+            encrypt(pdfBatchJob);
+        });
+        shutdownExecutor(executorService);
+    }
+
+    private void shutdownExecutor(ExecutorService executorService) {
+        try {
+            System.out.println("attempt to shutdown executor");
+            executorService.shutdown();
+            executorService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            System.err.println("tasks interrupted");
+        } finally {
+            if (!executorService.isTerminated()) {
+                System.err.println("cancel non-finished tasks");
+            }
+            executorService.shutdownNow();
+            System.out.println("shutdown finished");
         }
     }
 }

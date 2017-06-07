@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import model.application.ApplicationStatus;
 import org.apache.log4j.Logger;
 import util.EventBusProvider;
 
@@ -23,6 +24,7 @@ public class Main extends Application {
         primaryStage.show();
 
         EventBusProvider.getInstance().post(new ApplicationStartEvent(primaryStage));
+        EventBusProvider.getInstance().post(ApplicationStatus.IDLE);
     }
 
     @Override

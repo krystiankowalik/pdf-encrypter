@@ -1,9 +1,13 @@
 package controller;
 
+import com.google.common.eventbus.Subscribe;
+import com.sun.istack.internal.Nullable;
 import event.type.*;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.layout.HBox;
+import model.application.ApplicationStatus;
 import org.apache.log4j.Logger;
 import util.EventBusProvider;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,6 +21,8 @@ import java.util.ResourceBundle;
 public class ControlPaneController implements Initializable {
 
     final private Logger logger = Logger.getLogger(getClass());
+    @FXML
+    private Label applicationStatusIndicatorText;
 
     @FXML
     private Button encryptButton;
@@ -69,7 +75,16 @@ public class ControlPaneController implements Initializable {
             EventBusProvider.getInstance().post(new ClearButtonClickedEvent());
         });
     }
-    private void registerEventBus(){
+
+    @Subscribe
+    public void setApplicationStatus(final ApplicationStatus applicationStatus) {
+        String statusDescription = applicationStatus.getDescription();
+        applicationStatusIndicatorText.setText(statusDescription);
+        logger.info(statusDescription);
+
+    }
+
+    private void registerEventBus() {
         EventBusProvider.getInstance().register(this);
     }
 }

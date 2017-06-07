@@ -5,18 +5,18 @@ import org.apache.log4j.Logger;
 
 public class EventBusProvider {
 
-    final private static Logger logger = Logger.getLogger(EventBusProvider.class);
+    //final private static Logger logger = Logger.getLogger(EventBusProvider.class);
 
     private static EventBus eventBus;
 
     public static EventBus getInstance() {
 
         if (eventBus == null) {
-            logger.debug("New Instance of eventBus needed");
+            //logger.debug("New Instance of eventBus needed");
             eventBus = new EventBus();
             return eventBus;
         } else {
-            logger.debug("EventBus already exists");
+            //logger.debug("EventBus already exists");
             return eventBus;
         }
     }

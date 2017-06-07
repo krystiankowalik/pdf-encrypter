@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import event.type.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -16,10 +17,10 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Paint;
-import javafx.stage.Stage;
-import model.PdfBatchJob;
-import model.PdfFile;
-import model.PdfJob;
+import model.application.ApplicationStatus;
+import model.pdf.PdfBatchJob;
+import model.pdf.PdfFile;
+import model.pdf.PdfJob;
 import org.apache.log4j.Logger;
 import util.EventBusProvider;
 import util.PdfEncryptionHandler;
@@ -27,11 +28,14 @@ import util.PdfEncryptionHandler;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class FilePaneController implements Initializable {
 
     final private Logger logger = Logger.getLogger(getClass());
-
     private PdfBatchJob pdfBatchJob;
 
     @FXML
@@ -40,7 +44,6 @@ public class FilePaneController implements Initializable {
     private StringProperty sourcePasswordProperty;
     private StringProperty targetPasswordProperty;
 
-    private Stage primaryStage;
     private TableColumn<PdfJob, String> pdfJobStatusColumn;
     private TableColumn<PdfJob, String> pdfSourcePathColumn;
 
@@ -57,10 +60,8 @@ public class FilePaneController implements Initializable {
         handleDragDroppedEvent();
         setDragEffects();
         handleDeleteKey();
+        setPdfBatchJobChangeListener();
     }
-
-
-
 
 
     @SuppressWarnings("unchecked")
@@ -95,14 +96,10 @@ public class FilePaneController implements Initializable {
                                             new BackgroundFill(pdfJobStatus.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
                             setTextFill(Paint.valueOf("#ffffff"));
                             setText(pdfJobStatus.getDescription());
-
                         }
-
                     }
                 }
         );
-
-
     }
 
     private void handleDragDroppedEvent() {
@@ -168,7 +165,6 @@ public class FilePaneController implements Initializable {
                 logger.debug("After delete: " + pdfBatchJob.toString());
             }
         });
-
     }
 
     @Subscribe
@@ -186,19 +182,22 @@ public class FilePaneController implements Initializable {
     @Subscribe
     public void handleEncryptButtonClickedEvent(final EncryptButtonClickedEvent encryptButtonClickedEvent) {
         logger.debug("Encrypt Button signal received in: " + getClass().getSimpleName() + " too");
-        PdfEncryptionHandler.getInstance().encrypt(pdfBatchJob);
+        EventBusProvider.getInstance().post(ApplicationStatus.PROCESSING);
+
+        PdfEncryptionHandler.getInstance().encryptAsync(pdfBatchJob);
+
+        EventBusProvider.getInstance().post(ApplicationStatus.FINISHED);
+
     }
 
     @Subscribe
     public void handleDecryptButtonClickedEvent(final DecryptButtonClickedEvent decryptButtonClickedEvent) {
         logger.debug("Decrypt Button signal received in: " + getClass().getSimpleName() + " too");
-        PdfEncryptionHandler.getInstance().decrypt(pdfBatchJob);
-    }
+        EventBusProvider.getInstance().post(ApplicationStatus.PROCESSING);
+        PdfEncryptionHandler.getInstance().decryptAsync(pdfBatchJob);
 
-    @Subscribe
-    public void handleApplicationStart(final ApplicationStartEvent applicationStartEvent) {
-        logger.debug(applicationStartEvent.getClass().getSimpleName() + " received");
-        primaryStage = applicationStartEvent.getStage();
+        EventBusProvider.getInstance().post(ApplicationStatus.FINISHED);
+
     }
 
     @Subscribe
@@ -207,7 +206,13 @@ public class FilePaneController implements Initializable {
         pdfBatchJob.clear();
     }
 
-    private void registerEventBus(){
+    private void setPdfBatchJobChangeListener() {
+        pdfBatchJob
+                .getPdfBatchJob()
+                .addListener((ListChangeListener<PdfJob>) c -> pdfBatchJob.compareSourceAndTargetSizes());
+    }
+
+    private void registerEventBus() {
         EventBusProvider.getInstance().register(this);
     }
 

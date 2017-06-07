@@ -1,14 +1,15 @@
-package model;
+package model.pdf;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.log4j.Logger;
+
+import java.util.stream.Collectors;
 
 public class PdfBatchJob {
 
     private ObservableList<PdfJob> pdfBatchJob;
-
-    // TODO: 29.05.17 Some error handling in the event the lists' sizes are not equal
-
+    final private Logger logger = Logger.getLogger(getClass());
 
     public PdfBatchJob(ObservableList<PdfJob> pdfBatchJob) {
         this.pdfBatchJob = pdfBatchJob;
@@ -26,8 +27,26 @@ public class PdfBatchJob {
         return pdfBatchJob.get(index);
     }
 
-    public void set(int index, PdfJob pdfJob){
-        pdfBatchJob.set(index,pdfJob);
+    private PdfFiles getSourceFiles() {
+        return new PdfFiles(
+                pdfBatchJob
+                        .stream()
+                        .map(PdfJob::getSourcePdfFile)
+                        .collect(Collectors.toCollection(FXCollections::observableArrayList)));
+
+    }
+
+    private PdfFiles getTargetFiles() {
+        return new PdfFiles(
+                pdfBatchJob
+                        .stream()
+                        .map(PdfJob::getTargetPdfFile)
+                        .collect(Collectors.toCollection(FXCollections::observableArrayList)));
+
+    }
+
+    public void set(int index, PdfJob pdfJob) {
+        pdfBatchJob.set(index, pdfJob);
     }
 
     public void add(PdfJob pdfJob) {
@@ -47,12 +66,20 @@ public class PdfBatchJob {
         return pdfBatchJob;
     }
 
-    public void clear(){
+    public void clear() {
         pdfBatchJob.clear();
     }
 
     public void setPdfBatchJob(ObservableList<PdfJob> pdfBatchJob) {
         this.pdfBatchJob = pdfBatchJob;
+    }
+
+    public void compareSourceAndTargetSizes() {
+        if (getSourceFiles().size() != getTargetFiles().size()) {
+            logger.warn("Sizes of source file list and target file list are not equal in: " + pdfBatchJob);
+        } else{
+            logger.info("Sizes of source file list and target file list are equal.");
+        }
     }
 
     @Override

@@ -1,12 +1,8 @@
-package model;
+package model.pdf;
 
-import com.sun.xml.internal.fastinfoset.util.DuplicateAttributeVerifier;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.paint.Color;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
 
 
 public class PdfJob {

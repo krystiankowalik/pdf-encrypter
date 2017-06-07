@@ -1,13 +1,15 @@
-package model;
+package model.pdf;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.List;
-
 public class PdfFiles {
 
     private ObservableList<PdfFile> pdfFiles = FXCollections.observableArrayList();
+
+    public PdfFiles(ObservableList<PdfFile> pdfFiles) {
+        this.pdfFiles = pdfFiles;
+    }
 
     public ObservableList<PdfFile> getPdfFiles() {
         return pdfFiles;

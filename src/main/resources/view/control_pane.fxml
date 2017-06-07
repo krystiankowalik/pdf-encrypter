@@ -50,7 +50,7 @@
             </Button>
         </HBox>
     </HBox>
-    <HBox id="application_status_indicator" alignment="TOP_RIGHT">
+    <HBox id="application_status_indicator" fx:id="applicationStatusIndicator" alignment="TOP_RIGHT">
         <Label id="application_status_indicator_text" fx:id="applicationStatusIndicatorText" alignment="TOP_RIGHT"
                text="Idle" VBox.vgrow="NEVER"/>
     </HBox>

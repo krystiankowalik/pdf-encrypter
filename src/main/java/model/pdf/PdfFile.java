@@ -1,4 +1,4 @@
-package model;
+package model.pdf;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
