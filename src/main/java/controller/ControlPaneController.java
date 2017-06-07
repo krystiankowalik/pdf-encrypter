@@ -40,14 +40,14 @@ public class ControlPaneController implements Initializable {
     private void postPasswordTextFieldsPropertiesEvents() {
 
         targetPasswordField.textProperty().addListener((observable, oldValue, newValue) -> {
-            logger.debug(targetPasswordField.getClass().getSimpleName() + " has changed");
+            //logger.debug(targetPasswordField.getClass().getSimpleName() + " has changed");
             TargetPasswordPropertyEvent targetPasswordPropertyEvent =
                     new TargetPasswordPropertyEvent(new SimpleStringProperty(newValue));
             EventBusProvider.getInstance().post(targetPasswordPropertyEvent);
         });
 
         sourcePasswordField.textProperty().addListener((observable, oldValue, newValue) -> {
-            logger.debug(targetPasswordField.getClass().getSimpleName() + " has changed");
+            //logger.debug(targetPasswordField.getClass().getSimpleName() + " has changed");
             SourcePasswordPropertyEvent sourcePasswordPropertyEvent =
                     new SourcePasswordPropertyEvent(new SimpleStringProperty(newValue));
             EventBusProvider.getInstance().post(sourcePasswordPropertyEvent);
@@ -69,8 +69,8 @@ public class ControlPaneController implements Initializable {
             EventBusProvider.getInstance().post(new ClearButtonClickedEvent());
         });
     }
-
-    private void registerEventBus() {
+    private void registerEventBus(){
         EventBusProvider.getInstance().register(this);
     }
 }
+

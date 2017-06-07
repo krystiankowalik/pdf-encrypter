@@ -34,17 +34,6 @@ public class PdfBatchJob {
         pdfBatchJob.add(pdfJob);
     }
 
-   /* private void  areSizesEqual() throws UnexpectedException {
-        if(pdfSourceFiles==null || pdfTargetFiles==null){
-            return;
-        }
-        if( pdfSourceFiles.size() != pdfTargetFiles.size()){
-            throw new UnexpectedException("Sizes of source files and target files are not equal");
-
-        }
-
-    }*/
-
     public boolean containsSourceFile(String file) {
         return pdfBatchJob
                 .stream()
@@ -58,7 +47,18 @@ public class PdfBatchJob {
         return pdfBatchJob;
     }
 
+    public void clear(){
+        pdfBatchJob.clear();
+    }
+
     public void setPdfBatchJob(ObservableList<PdfJob> pdfBatchJob) {
         this.pdfBatchJob = pdfBatchJob;
+    }
+
+    @Override
+    public String toString() {
+        return "PdfBatchJob{" +
+                "pdfBatchJob=" + pdfBatchJob +
+                '}';
     }
 }

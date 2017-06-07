@@ -15,12 +15,11 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         registerEventBus();
 
-
         logger.debug("The application started.");
 
         Parent root = FXMLLoader.load(getClass().getResource("/view/main_pane.fxml"));
         primaryStage.setTitle("Pdf NC");
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(new Scene(root,900,600));
         primaryStage.show();
 
         EventBusProvider.getInstance().post(new ApplicationStartEvent(primaryStage));
@@ -32,7 +31,7 @@ public class Main extends Application {
         logger.info("The application stopped");
     }
 
-    private void registerEventBus() {
+    private void registerEventBus(){
         EventBusProvider.getInstance().register(this);
     }
 

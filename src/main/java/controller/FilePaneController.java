@@ -2,24 +2,31 @@ package controller;
 
 import com.google.common.eventbus.Subscribe;
 import event.type.*;
-import javafx.scene.input.*;
-import javafx.stage.Stage;
-import org.apache.log4j.Logger;
-import util.EventBusProvider;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import util.PdfEncryptionHandler;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Paint;
+import javafx.stage.Stage;
 import model.PdfBatchJob;
 import model.PdfFile;
 import model.PdfJob;
+import org.apache.log4j.Logger;
+import util.EventBusProvider;
+import util.PdfEncryptionHandler;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Stack;
 
 public class FilePaneController implements Initializable {
 
@@ -34,6 +41,8 @@ public class FilePaneController implements Initializable {
     private StringProperty targetPasswordProperty;
 
     private Stage primaryStage;
+    private TableColumn<PdfJob, String> pdfJobStatusColumn;
+    private TableColumn<PdfJob, String> pdfSourcePathColumn;
 
 
     @Override
@@ -44,16 +53,20 @@ public class FilePaneController implements Initializable {
 
         registerEventBus();
         bindColumnsToProperties();
+        colorStatusColumnCellsBasedOnValue();
         handleDragDroppedEvent();
         setDragEffects();
         handleDeleteKey();
     }
 
 
+
+
+
     @SuppressWarnings("unchecked")
     private void bindColumnsToProperties() {
-        TableColumn<PdfJob, String> pdfSourcePathColumn = new TableColumn<>("Path");
-        TableColumn<PdfJob, String> pdfJobStatusColumn = new TableColumn<>("Status");
+        pdfSourcePathColumn = new TableColumn<>("Path");
+        pdfJobStatusColumn = new TableColumn<>("Status");
 
         pdfSourcePathColumn.setCellValueFactory(param -> param.getValue().getSourcePdfFile().pathnameProperty());
         pdfJobStatusColumn.setCellValueFactory(param -> param.getValue().getStatus().descriptionProperty());
@@ -64,6 +77,33 @@ public class FilePaneController implements Initializable {
 
     }
 
+    private void colorStatusColumnCellsBasedOnValue() {
+        pdfJobStatusColumn.setCellFactory(column -> new TableCell<PdfJob, String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (item == null) {
+                            setText("");
+                            setBackground(null);
+
+                        } else {
+                            PdfJob.Status pdfJobStatus = pdfBatchJob.get(getIndex()).getStatus();
+                            //logger.debug("The status is " + pdfJobStatus);
+                            setBackground(
+                                    new Background(
+                                            new BackgroundFill(pdfJobStatus.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+                            setTextFill(Paint.valueOf("#ffffff"));
+                            setText(pdfJobStatus.getDescription());
+
+                        }
+
+                    }
+                }
+        );
+
+
+    }
 
     private void handleDragDroppedEvent() {
 
@@ -125,10 +165,11 @@ public class FilePaneController implements Initializable {
                     pdfJobTableView.getSelectionModel().clearSelection();
                     pdfJobTableView.getSelectionModel().select(currentlySelectedIndex + 1);
                 }
+                logger.debug("After delete: " + pdfBatchJob.toString());
             }
         });
-    }
 
+    }
 
     @Subscribe
     public void handleTargetPasswordPropertyChangeEvent(final TargetPasswordPropertyEvent targetPasswordPropertyEvent) {
@@ -163,12 +204,11 @@ public class FilePaneController implements Initializable {
     @Subscribe
     public void handleClearButtonClickedEvent(final ClearButtonClickedEvent clearButtonClickedEvent) {
         logger.debug("Clear Button signal received in: " + getClass().getSimpleName() + " too");
+        pdfBatchJob.clear();
     }
 
-
-    private void registerEventBus() {
+    private void registerEventBus(){
         EventBusProvider.getInstance().register(this);
     }
-
 
 }

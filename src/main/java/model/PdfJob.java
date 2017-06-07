@@ -1,7 +1,12 @@
 package model;
 
+import com.sun.xml.internal.fastinfoset.util.DuplicateAttributeVerifier;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.paint.Color;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 
 public class PdfJob {
@@ -35,21 +40,24 @@ public class PdfJob {
 
     public enum Status {
 
-        NOT_STARTED("Not started"),
-        INVALID_PASSWORD("Invalid password"),
-        NO_SUCH_FILE("There is no such file"),
-        READ_ERROR("Unable to read from file"),
-        WRITE_ERROR("Unable to write to file"),
-        ACCESS_DENIED("No access to the file"),
-        NO_DOCUMENT("The document doesn't exist"),
-        UNEXPECTED_ERROR("Unexpected error occurred"),
-        SUCCESS_DECRYPT("Decrypted successfully"),
-        SUCCESS_ENCRYPT("Encrypted successfully");
+        NOT_STARTED("Not started", Color.GRAY),
+        INVALID_PASSWORD("Invalid password", Color.RED),
+        NO_SUCH_FILE("There is no such file", Color.RED),
+        READ_ERROR("Unable to read from file", Color.RED),
+        WRITE_ERROR("Unable to write to file", Color.RED),
+        ACCESS_DENIED("No access to the file", Color.RED),
+        NO_DOCUMENT("The document doesn't exist", Color.RED),
+        UNEXPECTED_ERROR("Unexpected error occurred", Color.RED),
+        SUCCESS_DECRYPT("Decrypted successfully", Color.GREEN),
+        SUCCESS_ENCRYPT("Encrypted successfully", Color.GREEN);
 
         private StringProperty description;
+        private Color color;
+        final private static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(PdfJob.class);
 
-        Status(String description) {
+        Status(String description, Color color) {
             this.description = new SimpleStringProperty(description);
+            this.color = color;
         }
 
         public String getDescription() {
@@ -58,6 +66,10 @@ public class PdfJob {
 
         public StringProperty descriptionProperty() {
             return description;
+        }
+
+        public Color getColor() {
+            return color;
         }
     }
 

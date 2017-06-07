@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 
 import java.util.List;
 
-public class PdfFiles  {
+public class PdfFiles {
 
     private ObservableList<PdfFile> pdfFiles = FXCollections.observableArrayList();
 
@@ -17,15 +17,22 @@ public class PdfFiles  {
         this.pdfFiles = pdfFiles;
     }
 
-    public int size(){
-       return pdfFiles.size();
+    public int size() {
+        return pdfFiles.size();
     }
 
-    public PdfFile get(int index){
+    public PdfFile get(int index) {
         return pdfFiles.get(index);
     }
 
-    public void add(PdfFile pdfFile){
+    public void add(PdfFile pdfFile) {
         pdfFiles.add(pdfFile);
+    }
+
+    @Override
+    public String toString() {
+        return "PdfFiles{" +
+                "pdfFiles=" + pdfFiles +
+                '}';
     }
 }
