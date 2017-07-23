@@ -1,4 +1,4 @@
-package event.type;
+package event;
 
 public final class ClearButtonClickedEvent {
 

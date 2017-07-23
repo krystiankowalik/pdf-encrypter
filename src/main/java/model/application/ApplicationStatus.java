@@ -1,13 +1,10 @@
 package model.application;
 
-/**
- * Created by wd40 on 08.06.17.
- */
 public enum ApplicationStatus {
 
     IDLE(""),
     PROCESSING("Processing"),
-    FINISHED("Processed successfully");
+    FINISHED("Finished");
 
     String description;
 

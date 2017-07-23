@@ -1,7 +1,7 @@
 package controller;
 
 import com.google.common.eventbus.Subscribe;
-import event.type.*;
+import event.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;

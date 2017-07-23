@@ -1,11 +1,9 @@
 package controller;
 
 import com.google.common.eventbus.Subscribe;
-import event.type.ApplicationStartEvent;
+import event.ApplicationStartEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import model.pdf.PdfBatchJob;
@@ -33,4 +31,6 @@ public class MainController implements Initializable {
         logger.debug(applicationStartEvent.getClass().getSimpleName() + " received");
         primaryStage = applicationStartEvent.getStage();
     }
+
+
 }

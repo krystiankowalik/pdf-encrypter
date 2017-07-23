@@ -1,6 +1,7 @@
 package util;
 
-import event.type.UpdateJobEvent;
+import event.UpdateJobEvent;
+import model.application.ApplicationStatus;
 import model.pdf.PdfBatchJob;
 import model.pdf.PdfJob;
 import org.apache.log4j.Logger;
@@ -130,11 +131,6 @@ public class PdfEncryptionHandler {
 
     public void decryptAsync(PdfBatchJob pdfBatchJob) {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        /*executorService.submit(() -> {
-            split(pdfBatchJob)
-                    .forEach(batchJob ->
-                            new PdfTask(batchJob, PdfBatchJob.Type.DECRYPT).run());
-        });*/
         executorService.submit(() ->
                 split(pdfBatchJob)
                         .forEach(batchJob ->
@@ -164,7 +160,10 @@ public class PdfEncryptionHandler {
             }
             executorService.shutdownNow();
             logger.debug("shutdown finished");
+            EventBusProvider.getInstance().post(ApplicationStatus.FINISHED);
+
         }
+
     }
 
     private List<PdfBatchJob> split(PdfBatchJob pdfBatchJob) {

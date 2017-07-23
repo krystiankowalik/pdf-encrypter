@@ -1,4 +1,4 @@
-import event.type.ApplicationStartEvent;
+import event.ApplicationStartEvent;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

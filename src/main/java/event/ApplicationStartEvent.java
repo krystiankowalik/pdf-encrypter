@@ -1,4 +1,4 @@
-package event.type;
+package event;
 
 import javafx.stage.Stage;
 

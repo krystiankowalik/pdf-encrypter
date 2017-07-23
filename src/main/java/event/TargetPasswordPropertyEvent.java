@@ -1,13 +1,12 @@
-package event.type;
+package event;
 
 import javafx.beans.property.StringProperty;
 
-public final class SourcePasswordPropertyEvent {
+public final class TargetPasswordPropertyEvent {
 
     private final StringProperty textProperty;
 
-    public SourcePasswordPropertyEvent(StringProperty textProperty) {
-
+    public TargetPasswordPropertyEvent(StringProperty textProperty) {
         this.textProperty = textProperty;
     }
 
