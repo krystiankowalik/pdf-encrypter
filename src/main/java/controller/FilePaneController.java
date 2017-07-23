@@ -28,10 +28,7 @@ import util.PdfEncryptionHandler;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.UUID;
 
 public class FilePaneController implements Initializable {
 
@@ -56,7 +53,9 @@ public class FilePaneController implements Initializable {
 
         registerEventBus();
         bindColumnsToProperties();
+
         colorStatusColumnCellsBasedOnValue();
+
         handleDragDroppedEvent();
         setDragEffects();
         handleDeleteKey();
@@ -133,7 +132,6 @@ public class FilePaneController implements Initializable {
         pdfJobTableView.setOnDragExited(event -> {
             pdfJobTableView.setStyle("-fx-background-color: white");
             pdfJobTableView.setPlaceholder(new Label("Drag your files here!"));
-
         });
     }
 
@@ -144,7 +142,7 @@ public class FilePaneController implements Initializable {
                 .stream()
                 .map(File::getAbsolutePath)
                 .filter(path -> path.endsWith(".pdf") && !pdfBatchJob.containsSourceFile(path))
-                .forEach(path -> pdfBatchJob.add(new PdfJob(
+                .forEach(path -> pdfBatchJob.add(new PdfJob(UUID.randomUUID().toString(),
                         new PdfFile(path, sourcePasswordProperty),
                         new PdfFile(path, targetPasswordProperty))));
     }
@@ -165,6 +163,15 @@ public class FilePaneController implements Initializable {
                 logger.debug("After delete: " + pdfBatchJob.toString());
             }
         });
+
+
+    }
+
+    @Subscribe
+    public void updatePdfJob(final UpdateJobEvent updateJobEvent) {
+        logger.debug("UpdatePdfJob " + updateJobEvent);
+        pdfBatchJob.set(updateJobEvent.getPdfJob().getId(), updateJobEvent.getPdfJob());
+        pdfJobTableView.refresh();
     }
 
     @Subscribe
@@ -185,7 +192,6 @@ public class FilePaneController implements Initializable {
         EventBusProvider.getInstance().post(ApplicationStatus.PROCESSING);
 
         PdfEncryptionHandler.getInstance().encryptAsync(pdfBatchJob);
-
         EventBusProvider.getInstance().post(ApplicationStatus.FINISHED);
 
     }

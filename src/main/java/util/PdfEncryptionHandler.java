@@ -1,5 +1,6 @@
 package util;
 
+import event.type.UpdateJobEvent;
 import model.pdf.PdfBatchJob;
 import model.pdf.PdfJob;
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.concurrent.*;
 
 public class PdfEncryptionHandler {
@@ -23,19 +25,19 @@ public class PdfEncryptionHandler {
 
         if (pdfEncryptionHandler == null) {
             pdfEncryptionHandler = new PdfEncryptionHandler();
-            return pdfEncryptionHandler;
-        } else {
-            return pdfEncryptionHandler;
         }
+        return pdfEncryptionHandler;
+
     }
 
-    private PdfJob encrypt(PdfJob pdfJob) {
+    private void encrypt(PdfJob pdfJob) {
 
         logger.info("Encrypting " + pdfJob);
 
         if (pdfJob.getTargetPdfFile().passwordProperty().getValueSafe().length() == 0) {
             logger.info("There is no target password - decrypting instead of encrypting.");
-            return decrypt(pdfJob);
+            decrypt(pdfJob);
+            return;
         }
 
         PDDocument pdDocument = null;
@@ -83,10 +85,10 @@ public class PdfEncryptionHandler {
                 pdfJob = setPdfJobStatus(pdfJob, PdfJob.Status.UNEXPECTED_ERROR, e);
             }
         }
-        return pdfJob;
+        EventBusProvider.getInstance().post(new UpdateJobEvent(pdfJob));
     }
 
-    private PdfJob decrypt(PdfJob pdfJob) {
+    private void decrypt(PdfJob pdfJob) {
 
 
         logger.info("Decrypting " + pdfJob.getSourcePdfFile().getPathname() + " using source password: " + pdfJob.getSourcePdfFile().getPassword());
@@ -109,7 +111,7 @@ public class PdfEncryptionHandler {
         } catch (Exception e) {
             pdfJob = setPdfJobStatus(pdfJob, PdfJob.Status.UNEXPECTED_ERROR, e);
         }
-        return pdfJob;
+        EventBusProvider.getInstance().post(new UpdateJobEvent(pdfJob));
 
     }
 
@@ -126,53 +128,81 @@ public class PdfEncryptionHandler {
         return pdfJob;
     }
 
-    public void encrypt(PdfBatchJob pdfBatchJob) {
-        PdfJob updatedPdfJob;
-        for (int i = 0; i < pdfBatchJob.size(); ++i) {
-            updatedPdfJob = encrypt(pdfBatchJob.get(i));
-            pdfBatchJob.set(i, updatedPdfJob);
-        }
-    }
-
-    public void decrypt(PdfBatchJob pdfBatchJob) {
-        PdfJob updatedPdfJob;
-        for (int i = 0; i < pdfBatchJob.size(); ++i) {
-            updatedPdfJob = decrypt(pdfBatchJob.get(i));
-            pdfBatchJob.set(i, updatedPdfJob);
-        }
-    }
-
     public void decryptAsync(PdfBatchJob pdfBatchJob) {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        executorService.submit(() -> {
-
-            decrypt(pdfBatchJob);
-        });
+        /*executorService.submit(() -> {
+            split(pdfBatchJob)
+                    .forEach(batchJob ->
+                            new PdfTask(batchJob, PdfBatchJob.Type.DECRYPT).run());
+        });*/
+        executorService.submit(() ->
+                split(pdfBatchJob)
+                        .forEach(batchJob ->
+                                new PdfTask(batchJob, PdfBatchJob.Type.DECRYPT).run()));
         shutdownExecutor(executorService);
     }
 
     public void encryptAsync(PdfBatchJob pdfBatchJob) {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        executorService.submit(() -> {
-
-            encrypt(pdfBatchJob);
-        });
+        executorService.submit(() ->
+                split(pdfBatchJob)
+                        .forEach(batchJob ->
+                                new PdfTask(batchJob, PdfBatchJob.Type.ENCRYPT).run()));
         shutdownExecutor(executorService);
     }
 
     private void shutdownExecutor(ExecutorService executorService) {
         try {
-            System.out.println("attempt to shutdown executor");
+            logger.debug("attempt to shutdown executor");
             executorService.shutdown();
             executorService.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            System.err.println("tasks interrupted");
+            logger.debug("tasks interrupted");
         } finally {
             if (!executorService.isTerminated()) {
-                System.err.println("cancel non-finished tasks");
+                logger.debug("cancel non-finished tasks");
             }
             executorService.shutdownNow();
-            System.out.println("shutdown finished");
+            logger.debug("shutdown finished");
         }
     }
+
+    private List<PdfBatchJob> split(PdfBatchJob pdfBatchJob) {
+        int size = pdfBatchJob.size();
+        if (size > 5 && size < 10) {
+            return pdfBatchJob.split(2);
+        } else if (size > 10 && size < 15) {
+            return pdfBatchJob.split(3);
+        } else if (pdfBatchJob.size() > 15) {
+            return pdfBatchJob.split(4);
+        } else {
+            return pdfBatchJob.split(5);
+        }
+    }
+
+    class PdfTask implements Runnable {
+
+        private PdfBatchJob pdfBatchJob;
+        private PdfBatchJob.Type pdfBatchJobType;
+
+        PdfTask(PdfBatchJob pdfBatchJob, PdfBatchJob.Type pdfBatchJobType) {
+            this.pdfBatchJob = pdfBatchJob;
+            this.pdfBatchJobType = pdfBatchJobType;
+        }
+
+        @Override
+        public void run() {
+            if (pdfBatchJobType == PdfBatchJob.Type.ENCRYPT) {
+                pdfBatchJob
+                        .getPdfBatchJob()
+                        .forEach(PdfEncryptionHandler.this::encrypt);
+            } else {
+                pdfBatchJob
+                        .getPdfBatchJob()
+                        .forEach(PdfEncryptionHandler.this::decrypt);
+            }
+        }
+    }
+
 }
+

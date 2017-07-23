@@ -14,11 +14,8 @@ public class EventBusProvider {
         if (eventBus == null) {
             //logger.debug("New Instance of eventBus needed");
             eventBus = new EventBus();
-            return eventBus;
-        } else {
-            //logger.debug("EventBus already exists");
-            return eventBus;
         }
+        return eventBus;
     }
 
     public static void registerEventBus(Class clazz) {

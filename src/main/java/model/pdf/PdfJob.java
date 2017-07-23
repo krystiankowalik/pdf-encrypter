@@ -7,9 +7,11 @@ import javafx.scene.paint.Color;
 
 public class PdfJob {
 
+    private String id;
     private PdfFile sourcePdfFile;
     private PdfFile targetPdfFile;
     private Status status;
+
 
     public PdfJob(PdfFile sourcePdfFile, PdfFile targetPdfFile) {
         this.sourcePdfFile = sourcePdfFile;
@@ -17,6 +19,16 @@ public class PdfJob {
         status = Status.NOT_STARTED;
     }
 
+    public PdfJob(String id, PdfFile sourcePdfFile, PdfFile targetPdfFile) {
+        this.id = id;
+        this.sourcePdfFile = sourcePdfFile;
+        this.targetPdfFile = targetPdfFile;
+        status = Status.NOT_STARTED;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public PdfFile getSourcePdfFile() {
         return sourcePdfFile;
@@ -33,6 +45,7 @@ public class PdfJob {
     public void setStatus(Status status) {
         this.status = status;
     }
+
 
     public enum Status {
 
@@ -69,11 +82,21 @@ public class PdfJob {
         }
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return "PdfJob{" +
                 "sourcePdfFile=" + sourcePdfFile +
                 ", targetPdfFile=" + targetPdfFile +
+                '}';
+    }*/
+
+    @Override
+    public String toString() {
+        return "PdfJob{" +
+                "id='" + id + '\'' +
+                ", sourcePdfFile=" + sourcePdfFile +
+                ", targetPdfFile=" + targetPdfFile +
+                ", status=" + status +
                 '}';
     }
 }
