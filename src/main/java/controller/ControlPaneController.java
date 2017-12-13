@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import model.application.ApplicationStatus;
 import org.apache.log4j.Logger;
@@ -30,16 +31,15 @@ public class ControlPaneController implements Initializable {
     @FXML
     private Button decryptButton;
     @FXML
-    private TextField targetPasswordField;
+    private PasswordField targetPasswordField;
     @FXML
-    private TextField sourcePasswordField;
+    private PasswordField sourcePasswordField;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         registerEventBus();
         postPasswordTextFieldsPropertiesEvents();
         postButtonEvents();
-
     }
 
     private void postPasswordTextFieldsPropertiesEvents() {
@@ -77,9 +77,12 @@ public class ControlPaneController implements Initializable {
 
     @Subscribe
     public void setApplicationStatus(final ApplicationStatus applicationStatus) {
-            String statusDescription = applicationStatus.getDescription();
-            applicationStatusIndicatorText.setText(statusDescription);
-            logger.info(statusDescription);
+        String statusDescription = applicationStatus.getDescription();
+        //application status temporarily disabled!
+        statusDescription = "";
+        applicationStatusIndicatorText.setText(statusDescription);
+        logger.info(statusDescription);
+
     }
 
     private void registerEventBus() {

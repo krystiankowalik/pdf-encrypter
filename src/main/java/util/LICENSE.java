@@ -721,7 +721,7 @@ public class LICENSE {
             pdfBoxLicense + System.lineSeparator() + LICENSE_DELIMITER + System.lineSeparator() +
             googleGuavaLicense + System.lineSeparator() + LICENSE_DELIMITER + System.lineSeparator() +
             commonsLoggingLicense + System.lineSeparator() + LICENSE_DELIMITER + System.lineSeparator() + System.lineSeparator() +
-            "The source code for this project can be viewed at: https://github.com/kryx07/PdfNC";
+            "The source code for this project can be viewed at: https://github.com/krystiankowalik/PdfNC";
 
 
 }
